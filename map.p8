@@ -3,108 +3,64 @@ version 29
 __lua__
 --jeu d'aventure
 
+-- sprite and delay value 
+
+--jeu d'aventure
+sprite = 16 -- Sprite 
+delay = 4 -- Delay
+x = 1 -- coordinate x 
+y = 13 -- coordinate y 
+w = false  -- to call walk function 
+
 function _init()
-	create_player()
-end
+end 
 
+-- Change coordinates according when we press the 
 function _update()
-	player_mouvement()
-	update_camera()
+    w = false 
+
+    if btn(0) then 
+        x= x-1
+        w = true
+    end 
+    if btn(1) then 
+        x = x+1 
+        w = true
+    end 
+
+    if btn(2) then 
+        y = y-1
+        w = true
+    end 
+
+    if btn(3) then 
+        y= y+1
+        w = true
+    end
+
+    if w then walk() 
+    else 
+        sprite = 16
+    end 
 end
 
+-- change sprites to create imitation of walking 
+function walk()
+    delay = delay-1
+    if (delay<0) then 
+        sprite = sprite+1
+        if (sprite > 18) then sprite = 16 end 
+        delay = 4
+    end
+end 
+
+-- Appear things on the screen 
 function _draw()
 	cls()
-	draw_map()
-	draw_player()
-end
--->8
---map
-
-function draw_map()
 	map(0,0,0,0,128,64)
+    spr(sprite,x,y)
 end
 
-function check_flag(flag,x,y)
-	local sprite=mget(x,y)
-	return fget(sprite,flag)
-end
-
-function update_camera()
-	camx=flr(p.x/16)*16
-	camy=flr(p.y/16)*16
-	camera(camx*8,camy*8)
-	-- flr divise en arrondissant vers le bas. *16 car une map=16pxls
-end
-
-function old_camera()
-	camx=mid(0,p.x-7.5,31-15)
- camy=mid(0,p.y-7.5,31-15)
-	-- position camera, on la decale
-	-- de 7.5 du perso.
-	-- mid permet de stopper la camera au bout de map
-	-- 31-15 = la taille de la map.
- camera(camx*8,camy*8)
-end
-
-function next_tile(x,y)
-	sprite=mget(x,y)
-	mset(x,y,sprite+1)
-end
-
-function pick_up_candy(x,y)
-	next_tile(x,y)
-	p.candy+=1
-	sfx(0)
-end
-
-function phantom(x,y)
-	nex-tile(x,y)
-	p.candy-=1
-	sfx(1)
-end
--->8
---player
-
-function create_player()
-	p={
-		x=1,	
-		y=13,
-		sprite=16,
-		candy=0
-	}
-end
-
-function draw_player()
-	spr(p.sprite,p.x*8,p.y*8)
-end
-
-function player_mouvement()
-	newx=p.x
-	newy=p.y
-	if (btnp(➡️)) newx+=1
-	if (btnp(⬅️)) newx-=1
-	if (btnp(⬆️)) newy-=1
-	if (btnp(⬇️)) newy+=1
-	
-	interact(newx,newy)
-	
-	if not  check_flag(0,newx,newy) then
-		p.x=newx
-		p.y=newy
-		--il y a un obstacle
-		if (p.x<0) p.x=0
-		if (p.y<0) p.y=0
-		if (p.x>127) p.x=127
-		if (p.y>63) p.y=63
-	end
-end
-
-function interact(x,y)
-	if check_flag(1,x,y) then
-	 pick_up_candy(x,y)
- elseif 
- phantom(x,y)
-end
 __gfx__
 000000003333333333933333333333333333333333bbbb331111111144444444334f44333333333333333333334444333333333333444433bb3bb33333333333
 000000003333333339a9339333333833337333333bbabab311111111cccccccc33444533333333333333333333445433333333333344f4333b3b333b33033333
