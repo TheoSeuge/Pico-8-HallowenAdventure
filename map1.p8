@@ -31,7 +31,7 @@ end
 --player
 
 function create_player()
-	p={x=1,y=13,sprite=16}
+	p={x=55,y=55,sprite=16}
 end
 
 function draw_player()
