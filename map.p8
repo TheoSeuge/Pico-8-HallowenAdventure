@@ -3,64 +3,124 @@ version 29
 __lua__
 --jeu d'aventure
 
--- sprite and delay value 
-
---jeu d'aventure
-sprite = 16 -- Sprite 
-delay = 4 -- Delay
-x = 1 -- coordinate x 
-y = 13 -- coordinate y 
-w = false  -- to call walk function 
-
 function _init()
+	p = {
+		-- sprite and delay value
+		sprite = 16, -- Sprite 
+		delay = 4, -- Delay
+		x = 1, -- coordinate x 
+		y = 13, -- coordinate y 
+		w = false,  -- to call walk function
+        candy = 0
+	}
 end 
 
--- Change coordinates according when we press the 
 function _update()
-    w = false 
-
-    if btn(0) then 
-        x= x-1
-        w = true
-    end 
-    if btn(1) then 
-        x = x+1 
-        w = true
-    end 
-
-    if btn(2) then 
-        y = y-1
-        w = true
-    end 
-
-    if btn(3) then 
-        y= y+1
-        w = true
-    end
-
-    if w then walk() 
-    else 
-        sprite = 16
-    end 
+    player_movement()
+    update_camera()
 end
-
--- change sprites to create imitation of walking 
-function walk()
-    delay = delay-1
-    if (delay<0) then 
-        sprite = sprite+1
-        if (sprite > 18) then sprite = 16 end 
-        delay = 4
-    end
-end 
 
 -- Appear things on the screen 
 function _draw()
 	cls()
-	map(0,0,0,0,128,64)
-    spr(sprite,x,y)
+    draw_map()
+    spr(p.sprite, p.x * 8, p.y * 8)
 end
 
+
+-->
+--
+-->
+
+function next_tile(x, y)
+    sprite = mget(x, y)
+    mset(x, y, sprite + 1)
+end
+
+function pick_up_candy(x, y)
+    next_tile(x, y)
+    p.candy += 1
+    sfx(0)
+end
+
+function ghost_remove(x, y)
+    next_tile(x, y)
+    p.candy -= 1
+    sfx(1)
+end
+
+--MOVEMENT
+
+function interact(x, y)
+    if check_flag(1, x, y) then
+        pick_up_candy(x, y)
+    elseif check_flag(2, x, y) and p.candy > 0 then
+        ghost_remove(x, y)
+    end
+end
+
+function player_movement()
+    p.w = false 
+	newx = p.x
+	newy = p.y
+
+    if btnp(0) then 
+        newx -= 1
+        p.w = true
+    end 
+    if btnp(1) then 
+        newx += 1 
+        p.w = true
+    end 
+
+    if btnp(2) then 
+        newy -= 1
+        p.w = true
+    end 
+
+    if btnp(3) then 
+        newy += 1
+        p.w = true
+    end
+
+    if p.w then walk() 
+    else 
+        p.sprite = 16
+    end 
+
+    interact(newx, newy)
+
+	if not check_flag(0, newx, newy) then
+		p.x = mid (0, newx, 127)
+		p.y = mid (0, newy, 63)
+	end
+end
+
+function walk()
+    p.delay = p.delay-1
+    if (p.delay<0) then 
+        p.sprite = p.sprite+1
+        if (p.sprite > 18) then p.sprite = 16 end 
+        p.delay = 4
+    end
+end 
+
+--CAMERA
+
+function check_flag(flag, x, y)
+	local sprite = mget(x, y)
+	return fget(sprite, flag)
+end
+
+function update_camera()
+    camx = flr (p.x / 16) * 16
+    camy = flr (p.y / 16) * 16
+    camera(camx * 8, camy * 8)
+end
+
+function draw_map()
+    map(0,0,0,0,128,64)
+end
 __gfx__
 000000003333333333933333333333333333333333bbbb331111111144444444334f44333333333333333333334444333333333333444433bb3bb33333333333
 000000003333333339a9339333333833337333333bbabab311111111cccccccc33444533333333333333333333445433333333333344f4333b3b333b33033333
@@ -95,7 +155,7 @@ ddffefd0ddffefd0ddffefd0000000000000000036505003366650333555333355353555333fffff
 355550000000555353555088880555353377763d33333333d3677733333333330000000000000000000000000000000000000000000000000000000000000000
 35555000000055503305508888055035333773633333333336377333333333330000000000000000000000000000000000000000000000000000000000000000
 __gff__
-0000000000010101000000000000000000000001010101000001010101000101000000000202000000000002020000000000000005000500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000010101000000000000000000000001010101000001010101000101000000000200000000000002020000000000000005000500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 __map__
 0505050505050501010101010115151501010101010117171c1c1c1c17011515150101151501010101010101010101151515151515151515151515151515151505050505050505010101010101151515010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101
