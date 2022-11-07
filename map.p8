@@ -4,23 +4,59 @@ __lua__
 --jeu d'aventure
 
 function _init()
+    scene = "menu"
     create_player()
     init_msg()
 end 
 
 function _update()
+    if scene == "menu" then
+        update_menu()
+    elseif scene == "game" then
+        update_game()
+    end
+end
+
+function _draw()
+    if scene == "menu" then
+        draw_menu()
+    elseif scene == "game" then
+        draw_game()
+    end
+end
+
+--UPDATE
+
+function update_menu()
+    if btnp(5) then
+        scene = "game"
+    end
+end
+
+function update_game()
     player_movement()
     update_camera()
     update_msg()
 end
 
-function _draw()
-	cls()
-    draw_map()  
+--DRAW
+
+function draw_menu()
+    cls()
+    map(0, 49)
+    print("PRESS 'X' TO", 38, 50, 13)
+    print("TO START THE ADVENTURE GAME.", 10, 56, 13)
+    spr(18, 28, 40)
+end
+
+function draw_game()
+    cls()
+    draw_map()
     draw_player()
     draw_ui()
     draw_msg()
 end
+
 
 function draw_ui()
     camera()
