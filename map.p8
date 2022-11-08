@@ -223,10 +223,10 @@ function draw_msg()
 		if p.y%16>9 then
 			y=10
 		end
-		rectfill(6,y,6+#msg_title*4,y+6,2)
-		print (msg_title,7,y,7)
-		rectfill(2,y+9,125,y+20,4)
-		print(messages[1],0,y+10,7)
+		rectfill(6,y-4,6+#msg_title*5,y+6,9)
+		print (msg_title,10,y,7)
+		rectfill(2,y+9,115,y+20,1)
+		print(messages[1],10,y+12,7)
 	end
 end
 
