@@ -139,7 +139,7 @@ function interact(x, y)
 end
 
 function player_movement()
-    p.w = false 
+    p.w = true 
 	newx = p.x
 	newy = p.y
 
